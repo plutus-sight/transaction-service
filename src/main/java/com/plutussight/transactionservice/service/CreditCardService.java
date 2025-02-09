@@ -1,7 +1,7 @@
 package com.plutussight.transactionservice.service;
 
 import com.plutussight.transactionservice.entity.CreditCard;
-import com.plutussight.transactionservice.repository.CreditCardRepository;
+import com.plutussight.transactionservice.repository.jpa.CreditCardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

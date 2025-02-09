@@ -1,4 +1,4 @@
-package com.plutussight.transactionservice.repository;
+package com.plutussight.transactionservice.repository.jpa;
 
 import com.plutussight.transactionservice.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;

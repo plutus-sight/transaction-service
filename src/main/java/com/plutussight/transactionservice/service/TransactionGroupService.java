@@ -1,7 +1,7 @@
 package com.plutussight.transactionservice.service;
 
 import com.plutussight.transactionservice.entity.TransactionGroup;
-import com.plutussight.transactionservice.repository.TransactionGroupRepository;
+import com.plutussight.transactionservice.repository.jpa.TransactionGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

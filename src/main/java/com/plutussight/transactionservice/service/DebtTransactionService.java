@@ -1,7 +1,7 @@
 package com.plutussight.transactionservice.service;
 
 import com.plutussight.transactionservice.entity.DebtTransaction;
-import com.plutussight.transactionservice.repository.DebtTransactionRepository;
+import com.plutussight.transactionservice.repository.jpa.DebtTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
