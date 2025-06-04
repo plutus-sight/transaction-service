@@ -1,33 +1,48 @@
 package com.plutussight.transactionservice.service;
 
+import com.plutussight.transactionservice.controller.request.CreateAccountRequest;
+import com.plutussight.transactionservice.controller.request.UpdateAccountRequest;
+import com.plutussight.transactionservice.controller.response.AccountResponse;
+import com.plutussight.transactionservice.controller.response.PagedAccountResponse;
 import com.plutussight.transactionservice.entity.Account;
+import com.plutussight.transactionservice.exception.ResourceNotFoundException;
+import com.plutussight.transactionservice.mapper.AccountMapper;
 import com.plutussight.transactionservice.repository.jpa.AccountRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-
 @Service
+@AllArgsConstructor
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
 
-    @Autowired
-    public AccountService(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public PagedAccountResponse getAllAccounts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Account> accountPage = accountRepository.findAll(pageable);
+        return accountMapper.toPagedResponse(accountPage);
     }
 
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+    public AccountResponse getAccountByCode(String code) {
+        return accountMapper.toResponse(accountRepository.findById(code)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found")));
+
     }
 
-    public Optional<Account> getAccountByCode(String code) {
-        return accountRepository.findById(code);
+    public AccountResponse createAccount(CreateAccountRequest request) {
+        Account account = accountMapper.toEntity(request);
+        return accountMapper.toResponse(accountRepository.save(account));
     }
 
-    public Account saveAccount(Account account) {
-        return accountRepository.save(account);
+    public AccountResponse updateAccount(String code, UpdateAccountRequest request) {
+        Account account = accountRepository.findById(code)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
+        accountMapper.updateEntityFromRequest(request, account);
+        return accountMapper.toResponse(accountRepository.save(account));
     }
 
     public void deleteAccount(String code) {

@@ -1,52 +1,52 @@
 package com.plutussight.transactionservice.controller;
 
-import com.plutussight.transactionservice.entity.CreditCard;
+import com.plutussight.transactionservice.controller.request.CreateCreditCardRequest;
+import com.plutussight.transactionservice.controller.request.UpdateCreditCardRequest;
+import com.plutussight.transactionservice.controller.response.CreditCardResponse;
+import com.plutussight.transactionservice.controller.response.PagedCreditCardResponse;
+import com.plutussight.transactionservice.controller.response.ServiceResponse;
 import com.plutussight.transactionservice.service.CreditCardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.plutussight.transactionservice.util.ResponseCode;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/credit-cards")
+@AllArgsConstructor
 public class CreditCardController {
 
     private final CreditCardService creditCardService;
 
-    @Autowired
-    public CreditCardController(CreditCardService creditCardService) {
-        this.creditCardService = creditCardService;
-    }
-
     @GetMapping
-    public List<CreditCard> getAllCreditCards() {
-        return creditCardService.getAllCreditCards();
+    public ResponseEntity<ServiceResponse<PagedCreditCardResponse>> getAllCreditCards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PagedCreditCardResponse pagedResponse = creditCardService.getAllCreditCards(page, size);
+        return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, pagedResponse));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CreditCard> getCreditCardById(@PathVariable UUID id) {
-        return creditCardService.getCreditCardById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ServiceResponse<CreditCardResponse>> getCreditCardById(@PathVariable String id) {
+        return ResponseEntity.ok(
+                new ServiceResponse<>(ResponseCode.SUCCESS, creditCardService.getCreditCardById(id)));
     }
 
     @PostMapping
-    public CreditCard createCreditCard(@RequestBody CreditCard creditCard) {
-        return creditCardService.saveCreditCard(creditCard);
+    public ResponseEntity<ServiceResponse<CreditCardResponse>> createCreditCard(@RequestBody CreateCreditCardRequest request) {
+        CreditCardResponse response = creditCardService.createCreditCard(request);
+        return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, response));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CreditCard> updateCreditCard(@PathVariable UUID id, @RequestBody CreditCard creditCard) {
-        if (!id.equals(creditCard.getId())) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(creditCardService.saveCreditCard(creditCard));
+    @PatchMapping("/{id}")
+    public ResponseEntity<ServiceResponse<CreditCardResponse>> updateCreditCard(
+            @PathVariable String id, @RequestBody UpdateCreditCardRequest request) {
+        CreditCardResponse response = creditCardService.updateCreditCard(id, request);
+        return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, response));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCreditCard(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteCreditCard(@PathVariable String id) {
         creditCardService.deleteCreditCard(id);
         return ResponseEntity.noContent().build();
     }

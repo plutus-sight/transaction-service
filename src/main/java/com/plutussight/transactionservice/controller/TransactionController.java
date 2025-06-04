@@ -1,48 +1,49 @@
 package com.plutussight.transactionservice.controller;
 
-import com.plutussight.transactionservice.entity.Transaction;
+import com.plutussight.transactionservice.constant.ResponseCode;
+import com.plutussight.transactionservice.controller.request.CreateTransactionRequest;
+import com.plutussight.transactionservice.controller.request.UpdateTransactionRequest;
+import com.plutussight.transactionservice.controller.response.PagedTransactionResponse;
+import com.plutussight.transactionservice.controller.response.ServiceResponse;
+import com.plutussight.transactionservice.controller.response.TransactionResponse;
 import com.plutussight.transactionservice.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/transactions")
+@AllArgsConstructor
 public class TransactionController {
 
     private final TransactionService transactionService;
 
-    @Autowired
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
-    }
-
     @GetMapping
-    public List<Transaction> getAllTransactions() {
-        return transactionService.getAllTransactions();
+    public ResponseEntity<ServiceResponse<PagedTransactionResponse>> getAllTransactions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PagedTransactionResponse pagedResponse = transactionService.getAllTransactions(page, size);
+        return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, pagedResponse));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Transaction> getTransactionById(@PathVariable UUID id) {
-        return transactionService.getTransactionById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ServiceResponse<TransactionResponse>> getTransactionById(@PathVariable UUID id) {
+        TransactionResponse transactionResponse = transactionService.getTransactionById(id);
+        return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, transactionResponse));
     }
 
     @PostMapping
-    public Transaction createTransaction(@RequestBody Transaction transaction) {
-        return transactionService.saveTransaction(transaction);
+    public ResponseEntity<ServiceResponse<TransactionResponse>> createTransaction(@RequestBody CreateTransactionRequest request) {
+        TransactionResponse savedTransactionResponse = transactionService.createTransaction(request);
+        return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, savedTransactionResponse));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Transaction> updateTransaction(@PathVariable UUID id, @RequestBody Transaction transaction) {
-        if (!id.equals(transaction.getId())) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(transactionService.saveTransaction(transaction));
+    @PatchMapping("/{id}")
+    public ResponseEntity<ServiceResponse<TransactionResponse>> updateTransaction(@PathVariable UUID id, @RequestBody UpdateTransactionRequest request) {
+        TransactionResponse updatedTransactionResponse = transactionService.updateTransaction(id, request);
+        return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, updatedTransactionResponse));
     }
 
     @DeleteMapping("/{id}")
