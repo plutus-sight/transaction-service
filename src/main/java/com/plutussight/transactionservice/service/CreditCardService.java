@@ -1,7 +1,6 @@
 package com.plutussight.transactionservice.service;
 
-import com.plutussight.transactionservice.controller.request.CreateCreditCardRequest;
-import com.plutussight.transactionservice.controller.request.UpdateCreditCardRequest;
+import com.plutussight.transactionservice.controller.request.CreditCardRequest;
 import com.plutussight.transactionservice.controller.response.CreditCardResponse;
 import com.plutussight.transactionservice.controller.response.PagedCreditCardResponse;
 import com.plutussight.transactionservice.entity.CreditCard;
@@ -14,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class CreditCardService {
@@ -23,29 +24,29 @@ public class CreditCardService {
 
     public PagedCreditCardResponse getAllCreditCards(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<CreditCard> creditCardPage = creditCardRepository.findAll(pageable);
+        Page<CreditCard> creditCardPage = creditCardRepository.findAllByDeletedAtIsNull(pageable);
         return creditCardMapper.toPagedResponse(creditCardPage);
     }
 
-    public CreditCardResponse getCreditCardById(String id) {
-        CreditCard creditCard = creditCardRepository.findById(id)
+    public CreditCardResponse getCreditCardById(UUID id) {
+        CreditCard creditCard = creditCardRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Credit card not found with id: " + id));
         return creditCardMapper.toResponse(creditCard);
     }
 
-    public CreditCardResponse createCreditCard(CreateCreditCardRequest request) {
+    public CreditCardResponse createCreditCard(CreditCardRequest request) {
         CreditCard creditCard = creditCardMapper.toEntity(request);
         return creditCardMapper.toResponse(creditCardRepository.save(creditCard));
     }
 
-    public CreditCardResponse updateCreditCard(String id, UpdateCreditCardRequest request) {
-        CreditCard creditCard = creditCardRepository.findById(id)
+    public CreditCardResponse updateCreditCard(UUID id, CreditCardRequest request) {
+        CreditCard creditCard = creditCardRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Credit card not found with id: " + id));
         creditCardMapper.updateEntityFromRequest(request, creditCard);
         return creditCardMapper.toResponse(creditCardRepository.save(creditCard));
     }
 
-    public void deleteCreditCard(String id) {
+    public void deleteCreditCard(UUID id) {
         creditCardRepository.deleteById(id);
     }
 }

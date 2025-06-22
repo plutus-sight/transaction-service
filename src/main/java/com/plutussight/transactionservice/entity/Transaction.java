@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Getter
@@ -36,7 +37,7 @@ public class Transaction extends BaseEntity {
     private BigDecimal amount;
 
     @Column(name = "date", nullable = false)
-    private LocalDate date;
+    private OffsetDateTime date;
 
     @Column(name = "note")
     private String note;

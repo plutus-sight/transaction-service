@@ -1,7 +1,6 @@
 package com.plutussight.transactionservice.service;
 
-import com.plutussight.transactionservice.controller.request.CreateTransactionRequest;
-import com.plutussight.transactionservice.controller.request.UpdateTransactionRequest;
+import com.plutussight.transactionservice.controller.request.TransactionRequest;
 import com.plutussight.transactionservice.controller.response.PagedTransactionResponse;
 import com.plutussight.transactionservice.controller.response.TransactionResponse;
 import com.plutussight.transactionservice.entity.Transaction;
@@ -25,22 +24,22 @@ public class TransactionService {
 
     public PagedTransactionResponse getAllTransactions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Transaction> transactionPage = transactionRepository.findAll(pageable);
+        Page<Transaction> transactionPage = transactionRepository.findAllByDeletedAtIsNull(pageable);
         return transactionMapper.toPagedResponse(transactionPage);
     }
 
     public TransactionResponse getTransactionById(UUID id) {
-        return transactionMapper.toResponse(transactionRepository.findById(id)
+        return transactionMapper.toResponse(transactionRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found")));
     }
 
-    public TransactionResponse createTransaction(CreateTransactionRequest request) {
+    public TransactionResponse createTransaction(TransactionRequest request) {
         Transaction transaction = transactionMapper.toEntity(request);
         return transactionMapper.toResponse(transactionRepository.save(transaction));
     }
 
-    public TransactionResponse updateTransaction(UUID id, UpdateTransactionRequest request) {
-        Transaction transaction = transactionRepository.findById(id)
+    public TransactionResponse updateTransaction(UUID id, TransactionRequest request) {
+        Transaction transaction = transactionRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
         transactionMapper.updateEntityFromRequest(request, transaction);
         return transactionMapper.toResponse(transactionRepository.save(transaction));

@@ -1,7 +1,6 @@
 package com.plutussight.transactionservice.mapper;
 
-import com.plutussight.transactionservice.controller.request.CreateTransactionRequest;
-import com.plutussight.transactionservice.controller.request.UpdateTransactionRequest;
+import com.plutussight.transactionservice.controller.request.TransactionRequest;
 import com.plutussight.transactionservice.controller.response.PagedTransactionResponse;
 import com.plutussight.transactionservice.controller.response.TransactionResponse;
 import com.plutussight.transactionservice.entity.Transaction;
@@ -12,12 +11,12 @@ import org.springframework.data.domain.Page;
 public interface TransactionMapper {
     TransactionResponse toResponse(Transaction transaction);
 
-    Transaction toEntity(CreateTransactionRequest request);
+    Transaction toEntity(TransactionRequest request);
 
     @Mapping(target = "transactions", source = "content")
     @Mapping(target = "pagination", source = ".")
     PagedTransactionResponse toPagedResponse(Page<Transaction> page);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromRequest(UpdateTransactionRequest request, @MappingTarget Transaction entity);
+    void updateEntityFromRequest(TransactionRequest request, @MappingTarget Transaction entity);
 }

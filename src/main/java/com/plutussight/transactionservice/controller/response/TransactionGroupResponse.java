@@ -5,10 +5,9 @@ import lombok.Data;
 import java.time.OffsetDateTime;
 
 @Data
-public class CreditCardResponse {
-    private String id;
+public class TransactionGroupResponse {
+    private String code;
     private String name;
-    private Integer cycleDate;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private OffsetDateTime deletedAt;

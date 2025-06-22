@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class PagedTransactionResponse {
-    private List<TransactionResponse> transactions;
+public class PagedDebtTransactionResponse {
+    private List<DebtTransactionResponse> debtTransactions;
     private PaginationResponse pagination;
 }

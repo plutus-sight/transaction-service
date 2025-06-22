@@ -23,12 +23,12 @@ public class AccountService {
 
     public PagedAccountResponse getAllAccounts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Account> accountPage = accountRepository.findAll(pageable);
+        Page<Account> accountPage = accountRepository.findAllByDeletedAtIsNull(pageable);
         return accountMapper.toPagedResponse(accountPage);
     }
 
     public AccountResponse getAccountByCode(String code) {
-        return accountMapper.toResponse(accountRepository.findById(code)
+        return accountMapper.toResponse(accountRepository.findByCodeAndDeletedAtIsNull(code)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found")));
 
     }
@@ -39,7 +39,7 @@ public class AccountService {
     }
 
     public AccountResponse updateAccount(String code, UpdateAccountRequest request) {
-        Account account = accountRepository.findById(code)
+        Account account = accountRepository.findByCodeAndDeletedAtIsNull(code)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
         accountMapper.updateEntityFromRequest(request, account);
         return accountMapper.toResponse(accountRepository.save(account));

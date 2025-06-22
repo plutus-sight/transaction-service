@@ -1,8 +1,7 @@
 package com.plutussight.transactionservice.controller;
 
 import com.plutussight.transactionservice.constant.ResponseCode;
-import com.plutussight.transactionservice.controller.request.CreateTransactionRequest;
-import com.plutussight.transactionservice.controller.request.UpdateTransactionRequest;
+import com.plutussight.transactionservice.controller.request.TransactionRequest;
 import com.plutussight.transactionservice.controller.response.PagedTransactionResponse;
 import com.plutussight.transactionservice.controller.response.ServiceResponse;
 import com.plutussight.transactionservice.controller.response.TransactionResponse;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/api/v1/transactions")
 @AllArgsConstructor
 public class TransactionController {
 
@@ -35,13 +34,13 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<ServiceResponse<TransactionResponse>> createTransaction(@RequestBody CreateTransactionRequest request) {
+    public ResponseEntity<ServiceResponse<TransactionResponse>> createTransaction(@RequestBody TransactionRequest request) {
         TransactionResponse savedTransactionResponse = transactionService.createTransaction(request);
         return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, savedTransactionResponse));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ServiceResponse<TransactionResponse>> updateTransaction(@PathVariable UUID id, @RequestBody UpdateTransactionRequest request) {
+    public ResponseEntity<ServiceResponse<TransactionResponse>> updateTransaction(@PathVariable UUID id, @RequestBody TransactionRequest request) {
         TransactionResponse updatedTransactionResponse = transactionService.updateTransaction(id, request);
         return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, updatedTransactionResponse));
     }
