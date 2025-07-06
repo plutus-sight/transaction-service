@@ -14,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @AllArgsConstructor
 public class AccountService {
@@ -43,6 +45,12 @@ public class AccountService {
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
         accountMapper.updateEntityFromRequest(request, account);
         return accountMapper.toResponse(accountRepository.save(account));
+    }
+
+    public void updateAccountBalance(String code, BigDecimal balance) {
+        Account account = accountRepository.findByCodeAndDeletedAtIsNull(code)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
+        account.setBalance(balance);
     }
 
     public void deleteAccount(String code) {

@@ -2,10 +2,10 @@ package com.plutussight.transactionservice.controller;
 
 
 import com.plutussight.transactionservice.constant.ResponseCode;
-import com.plutussight.transactionservice.controller.response.ServiceResponse;
 import com.plutussight.transactionservice.controller.request.DebtTransactionRequest;
 import com.plutussight.transactionservice.controller.response.DebtTransactionResponse;
 import com.plutussight.transactionservice.controller.response.PagedDebtTransactionResponse;
+import com.plutussight.transactionservice.controller.response.ServiceResponse;
 import com.plutussight.transactionservice.service.DebtTransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +20,6 @@ public class DebtTransactionController {
 
     private final DebtTransactionService debtTransactionService;
 
-    @PostMapping
-    public ResponseEntity<ServiceResponse<DebtTransactionResponse>> createDebtTransaction(@RequestBody DebtTransactionRequest request) {
-        DebtTransactionResponse response = debtTransactionService.createDebtTransaction(request);
-        return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, response));
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<ServiceResponse<DebtTransactionResponse>> getDebtTransactionById(@PathVariable UUID id) {
         DebtTransactionResponse response = debtTransactionService.getDebtTransactionById(id);
@@ -38,6 +32,12 @@ public class DebtTransactionController {
             @RequestParam(defaultValue = "10") int size) {
         PagedDebtTransactionResponse pagedResponse = debtTransactionService.getAllDebtTransactions(page, size);
         return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, pagedResponse));
+    }
+
+    @PostMapping
+    public ResponseEntity<ServiceResponse<DebtTransactionResponse>> createDebtTransaction(@RequestBody DebtTransactionRequest request) {
+        DebtTransactionResponse response = debtTransactionService.createDebtTransaction(request);
+        return ResponseEntity.ok(new ServiceResponse<>(ResponseCode.SUCCESS, response));
     }
 
     @PutMapping("/{id}")

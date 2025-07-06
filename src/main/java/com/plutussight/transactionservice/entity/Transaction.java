@@ -36,8 +36,11 @@ public class Transaction extends BaseEntity {
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
+    @Column(name = "balance", nullable = false)
+    private BigDecimal balance;
+
     @Column(name = "date", nullable = false)
-    private OffsetDateTime date;
+    private LocalDate date;
 
     @Column(name = "note")
     private String note;

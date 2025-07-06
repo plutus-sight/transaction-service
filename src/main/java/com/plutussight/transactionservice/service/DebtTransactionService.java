@@ -3,19 +3,20 @@ package com.plutussight.transactionservice.service;
 import com.plutussight.transactionservice.controller.request.DebtTransactionRequest;
 import com.plutussight.transactionservice.controller.response.DebtTransactionResponse;
 import com.plutussight.transactionservice.controller.response.PagedDebtTransactionResponse;
+import com.plutussight.transactionservice.entity.CreditCard;
 import com.plutussight.transactionservice.entity.DebtTransaction;
 import com.plutussight.transactionservice.exception.ResourceNotFoundException;
 import com.plutussight.transactionservice.mapper.DebtTransactionMapper;
+import com.plutussight.transactionservice.repository.jpa.CreditCardRepository;
 import com.plutussight.transactionservice.repository.jpa.DebtTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class DebtTransactionService {
 
     private final DebtTransactionRepository debtTransactionRepository;
     private final DebtTransactionMapper debtTransactionMapper;
+    private final CreditCardRepository creditCardRepository;
 
     public PagedDebtTransactionResponse getAllDebtTransactions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -37,9 +39,13 @@ public class DebtTransactionService {
     }
 
     public DebtTransactionResponse createDebtTransaction(DebtTransactionRequest request) {
+        CreditCard creditCard = creditCardRepository.findById(request.getCreditCardId())
+            .orElseThrow(() -> new ResourceNotFoundException("CreditCard not found with id: " + request.getCreditCardId()));
+        
         DebtTransaction debtTransaction = debtTransactionMapper.toEntity(request);
-        DebtTransaction savedDebtTransaction = debtTransactionRepository.save(debtTransaction);
-        return debtTransactionMapper.toResponse(savedDebtTransaction);
+        debtTransaction.setCreditCard(creditCard);
+
+        return debtTransactionMapper.toResponse(debtTransactionRepository.save(debtTransaction));
     }
 
     public DebtTransactionResponse updateDebtTransaction(UUID id, DebtTransactionRequest request) {
